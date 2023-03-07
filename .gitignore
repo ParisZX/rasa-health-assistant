@@ -115,3 +115,4 @@ models/
 terms/
 results/
 old_data/
+.rasa

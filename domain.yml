@@ -1,4 +1,4 @@
-version: '2.0'
+version: '3.1'
 session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: false
@@ -21,22 +21,72 @@ entities:
 slots:
   confirm_exercise:
     type: any
-    influence_conversation: false
+    mappings:
+    - type: from_intent
+      intent: affirm
+      value: true
+      conditions:
+      - active_loop: health_form
+        requested_slot: confirm_exercise  
+    - type: from_intent
+      intent: deny
+      value: false
+      conditions:
+      - active_loop: health_form
+        requested_slot: confirm_exercise  
+    - type: from_intent
+      intent: inform
+      value: true
+      conditions:
+      - active_loop: health_form
+        requested_slot: confirm_exercise  
   exercise:
-    type: any
-    influence_conversation: false
+    type: text
+    mappings:
+    - type: from_entity
+      entity: exercise
+      conditions:
+        - active_loop: health_form
+          requested_slot: exercise
   sleep:
-    type: any
-    influence_conversation: false
+    type: text
+    mappings:
+    - type: from_entity
+      entity: sleep
+    - type: from_intent
+      intent: deny
+      value: None
+      conditions:
+        - active_loop: health_form
+          requested_slot: sleep
   diet:
-    type: any
-    influence_conversation: false
+    type: text
+    mappings:
+    - type: from_text
+      intent:
+        - inform
+        - affirm
+        - deny
+      conditions:
+        - active_loop: health_form
+          requested_slot: diet
   stress:
-    type: any
-    influence_conversation: false
+    type: text
+    mappings:
+    - type: from_entity
+      entity: stress
+      conditions:
+        - active_loop: health_form
+          requested_slot: stress
   goal:
-    type: any
-    influence_conversation: false
+    type: text
+    mappings:
+    - type: from_text
+      intent: inform
+      not_intent: affirm, deny, bot_challenge
+      conditions:
+        - active_loop: health_form
+          requested_slot: goal
 responses:
   utter_greet:
   - text: Hi! It's time for your daily wellness check. Tracking healthy habits is a great way to measure your progress over time. Would you like to answer a few questions about your health?
@@ -81,34 +131,9 @@ actions:
 forms:
   health_form:
     required_slots:
-      confirm_exercise:
-      - type: from_intent
-        intent: affirm
-        value: true
-      - type: from_intent
-        intent: deny
-        value: false
-      - type: from_intent
-        intent: inform
-        value: true
-      exercise:
-      - type: from_entity
-        entity: exercise
-      sleep:
-      - type: from_entity
-        entity: sleep
-      - type: from_intent
-        intent: deny
-        value: None
-      stress:
-      - type: from_entity
-        entity: stress
-      diet:
-      - type: from_text
-        intent:
-        - inform
-        - affirm
-        - deny
-      goal:
-      - type: from_text
-        intent: inform
+      - confirm_exercise
+      - exercise
+      - sleep
+      - diet     
+      - stress
+      - goal
